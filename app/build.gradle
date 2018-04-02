@@ -1,0 +1,122 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "github.shardul.cats"
+
+        minSdkVersion 17
+
+        targetSdkVersion 27
+
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    buildTypes {
+        release {
+
+            // Load signing config, we keep release signing credentials out of build file
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+            def keystoreFile = properties.getProperty('keystore.file')
+            def keystorePassword = properties.getProperty('keystore.password')
+            def keystoreAlias = properties.getProperty('keystore.alias')
+            def validConfig = keystoreFile != null && keystorePassword != null && keystoreAlias != null;
+
+            if (validConfig) {
+                System.out.println("Release signing configured with " + keystoreFile)
+                signingConfigs {
+                    release {
+                        storeFile project.rootProject.file(keystoreFile)
+                        storePassword keystorePassword
+                        keyAlias keystoreAlias
+                        keyPassword keystorePassword
+                        v1SigningEnabled true
+                        v2SigningEnabled true
+                    }
+                }
+            } else {
+                System.out.println("Specify keystore.file, keystore.alias and keystore.password in local.properties to enable release signing.")
+            }
+
+            if (validConfig) {
+                signingConfig signingConfigs.release
+            }
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "all"
+
+    productFlavors {
+        cats {
+            buildConfigField "String", "CAT_CATEGORY", "\"clothes\""
+            dimension "all"
+        }
+        kittens {
+            buildConfigField "String", "CAT_CATEGORY", "\"caturday\""
+            dimension "all"
+            applicationIdSuffix ".kittens"
+        }
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // support libraries
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:cardview-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+
+    implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+
+    // network
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation "com.google.code.gson:gson:$google_gson_version"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    implementation("com.squareup.retrofit2:converter-simplexml:$simple_xml_version"){
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+    }
+
+    // di
+    implementation "com.google.dagger:dagger:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+
+    // Architecture components
+    implementation "android.arch.lifecycle:extensions:$arch_version"
+    implementation "android.arch.lifecycle:runtime:$arch_version"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+
+
+    testImplementation "junit:junit:$junit_version"
+    androidTestImplementation "com.android.support.test:runner:$runner_version"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
+
+    // Misc
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+
+}

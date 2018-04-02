@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Cats</string>
+    <string name="cats_fragment_loading_message">Finding world\'s finest cats for you!</string>
+</resources>
