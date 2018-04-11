@@ -83,7 +83,7 @@ public class CatsFragment extends Fragment {
                 if (cats == null || cats.isEmpty()) {
                     loading(true);
                 } else {
-                    mAdapter.getValue().setCats(cats);
+                    mAdapter.getValue().submitList(cats);
                     loading(false);
                 }
 
